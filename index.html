@@ -311,7 +311,8 @@
                 
                 // 1. Request Device
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'Arduino Scale' }],
+                    //filters: [{ name: 'Arduino Scale' }],
+                    acceptAllDevices: true,
                     optionalServices: [serviceUUID]
                 });
 
