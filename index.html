@@ -3,23 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bluetooth Force Plotter</title>
+    <title>FormForce - Real-Time Force Monitoring</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; padding: 20px; }
-        button { padding: 15px 30px; font-size: 18px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
-        button:disabled { background-color: #ccc; }
-        #status { margin-bottom: 10px; color: #666; }
-        canvas { max-width: 100%; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 3px solid #ff6b35;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #ccc;
+            font-weight: 300;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .content {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            padding: 50px;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            animation: pulse-off 2s infinite;
+        }
+
+        .status-dot.connected {
+            background-color: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes pulse-off {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.2; }
+        }
+
+        #status {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .value-display-container {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        #valueDisplay {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            letter-spacing: -1px;
+        }
+
+        .value-label {
+            font-size: 0.9rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        button {
+            padding: 18px 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #connectBtn {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        #connectBtn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+        }
+
+        #connectBtn:disabled {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: 2px solid #e0e0e0;
+        }
+
+        #resetBtn:hover {
+            background: #e0e0e0;
+            border-color: #d0d0d0;
+            transform: translateY(-3px);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 40px;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            #valueDisplay {
+                font-size: 2.5rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <h1>⚖️ Bluetooth Scale</h1>
-    <p id="status">Ready to connect...</p>
-    <h2 id="valueDisplay">0.00 kg</h2>
-    <button id="connectBtn" onclick="connectToBLE()">Connect to Arduino</button>
-    <canvas id="forceChart"></canvas>
+    <div class="header">
+        <h1>FormForce</h1>
+        <p>Real-Time Force Monitoring & Data Visualization</p>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <div class="status-container">
+                <div class="status-dot" id="statusDot"></div>
+                <p id="status">Ready to connect...</p>
+            </div>
+
+            <div class="value-display-container">
+                <p class="value-label">Current Force</p>
+                <h2 id="valueDisplay">0.00 kg</h2>
+            </div>
+
+            <div class="button-container">
+                <button id="connectBtn" onclick="connectToBLE()">Connect to Arduino</button>
+                <button id="resetBtn" onclick="resetChart()" style="display:none;">Reset Data</button>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="forceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Fall 2025 Hackathon Project by Jericho & Peter</p>
+    </div>
 
     <script>
         // --- CONFIGURATION ---
@@ -35,14 +260,54 @@
             type: 'line',
             data: {
                 labels: [],
-                datasets: [{ label: 'Force (kg)', data: [], borderColor: 'rgb(255, 99, 132)', tension: 0.1 }]
+                datasets: [{
+                    label: 'Force (kg)',
+                    data: [],
+                    borderColor: 'rgb(255, 107, 53)',
+                    backgroundColor: 'rgba(255, 107, 53, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgb(255, 107, 53)',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                }]
             },
-            options: { animation: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: { size: 12, weight: 'bold' },
+                            color: '#666',
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Force (kg)' },
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        ticks: { color: '#999' },
+                        grid: { display: false }
+                    }
+                }
+            }
         });
 
         async function connectToBLE() {
             try {
                 document.getElementById('status').innerText = "Scanning...";
+                document.getElementById('statusDot').style.animation = 'pulse 1s infinite';
                 
                 // 1. Request Device
                 device = await navigator.bluetooth.requestDevice({
@@ -64,20 +329,25 @@
                 await characteristic.startNotifications();
                 characteristic.addEventListener('characteristicvaluechanged', handleData);
 
-                document.getElementById('status').innerText = "Connected!";
+                document.getElementById('status').innerText = "Connected";
+                document.getElementById('statusDot').classList.add('connected');
                 document.getElementById('connectBtn').disabled = true;
                 document.getElementById('connectBtn').innerText = "Connected";
+                document.getElementById('resetBtn').style.display = 'block';
 
                 // Handle Disconnect
                 device.addEventListener('gattserverdisconnected', () => {
-                    document.getElementById('status').innerText = "Disconnected.";
+                    document.getElementById('status').innerText = "Disconnected";
+                    document.getElementById('statusDot').classList.remove('connected');
                     document.getElementById('connectBtn').disabled = false;
-                    alert("Device Disconnected");
+                    document.getElementById('connectBtn').innerText = "Connect to Arduino";
+                    document.getElementById('resetBtn').style.display = 'none';
                 });
 
             } catch (error) {
                 console.error(error);
                 document.getElementById('status').innerText = "Error: " + error;
+                document.getElementById('statusDot').style.animation = 'pulse-off 2s infinite';
             }
         }
 
@@ -98,6 +368,13 @@
             chart.data.labels.push(now);
             chart.data.datasets[0].data.push(parseFloat(value));
             chart.update();
+        }
+
+        function resetChart() {
+            chart.data.labels = [];
+            chart.data.datasets[0].data = [];
+            chart.update();
+            document.getElementById('valueDisplay').innerText = '0.00 kg';
         }
     </script>
 </body>
