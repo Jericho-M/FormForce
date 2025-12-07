@@ -128,7 +128,7 @@ function handleData(event) {
     const dataView = event.target.value;
     const massKg = dataView.getFloat32(0, true); 
 
-    if (massKg <= 0) {
+    if (Math.round(massKg,2) <= 0) {
         massKg = 0;
     }
     
