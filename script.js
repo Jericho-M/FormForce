@@ -45,7 +45,11 @@ const chart = new Chart(ctx, {
         maintainAspectRatio: false,
         animation: false,
         scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            y: { 
+                beginAtZero: true, 
+                suggestedMax: 5,
+                grid: { color: 'rgba(0,0,0,0.05)' } 
+            },
             x: { display: false }
         }
     }
