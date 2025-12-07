@@ -127,10 +127,6 @@ async function sendCommand(cmd) {
 function handleData(event) {
     const dataView = event.target.value;
     const massKg = dataView.getFloat32(0, true); 
-
-    if (Math.round(massKg,2) <= 0) {
-        massKg = 0;
-    }
     
     valueDisplay.innerText = massKg.toFixed(2) + " kg";
 
@@ -139,9 +135,12 @@ function handleData(event) {
         chart.data.labels.shift();
         chart.data.datasets[0].data.shift();
     }
-    chart.data.labels.push(now);
-    chart.data.datasets[0].data.push(massKg);
-    chart.update();
+
+    if (Math.round(massKg) > 0) {
+        chart.data.labels.push(now);
+        chart.data.datasets[0].data.push(massKg);
+        chart.update();
+    }
 }
 
 function onDisconnect() {
