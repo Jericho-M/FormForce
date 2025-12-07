@@ -4,53 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FormForce - Real-Time Force Monitoring</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; }
-        
-        .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: white; padding: 60px 20px; text-align: center; border-bottom: 3px solid #ff6b35; }
-        .header h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 10px; text-transform: uppercase; }
-        .header p { font-size: 1.1rem; color: #ccc; font-weight: 300; }
-        
-        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
-        .content { max-width: 900px; width: 100%; background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 50px; }
-        
-        .status-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 40px; }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; background-color: #e0e0e0; animation: pulse-off 2s infinite; }
-        .status-dot.connected { background-color: #4ade80; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        @keyframes pulse-off { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.2; } }
-        #status { font-size: 1rem; color: #666; font-weight: 500; }
-        
-        .value-display-container { text-align: center; margin-bottom: 30px; }
-        #valueDisplay { font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 10px 0; letter-spacing: -1px; }
-        .value-label { font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        
-        /* Connection Button */
-        .connect-container { text-align: center; margin-bottom: 30px; }
-        #connectBtn { padding: 15px 40px; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; background: #1a1a1a; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        #connectBtn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
-        #connectBtn:disabled { background: #4ade80; cursor: default; box-shadow: none; }
-
-        /* Control Buttons Grid */
-        .control-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 40px; }
-        .control-btn { padding: 15px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; color: white; opacity: 0.5; pointer-events: none; }
-        
-        /* Enabled State */
-        .control-btn.active { opacity: 1; pointer-events: auto; }
-        .control-btn:active { transform: scale(0.95); }
-
-        .btn-start { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
-        .btn-stop  { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
-        .btn-tare  { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-
-        .chart-container { position: relative; height: 350px; background: #fafafa; padding: 20px; border-radius: 12px; }
-        canvas { max-width: 100%; }
-        .footer { text-align: center; padding: 20px; color: #999; font-size: 0.9rem; }
-        
-        @media (max-width: 768px) { .header h1 { font-size: 2.5rem; } .content { padding: 30px 20px; } #valueDisplay { font-size: 2.5rem; } .control-grid { grid-template-columns: 1fr; } }
-    </style>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -72,13 +32,13 @@
             </div>
 
             <div class="connect-container">
-                <button id="connectBtn" onclick="connectToBLE()">📡 Connect to Device</button>
+                <button id="connectBtn">📡 Connect to Device</button>
             </div>
 
             <div class="control-grid">
-                <button class="control-btn btn-start" onclick="sendCommand('start')">Start</button>
-                <button class="control-btn btn-stop" onclick="sendCommand('stop')">Stop</button>
-                <button class="control-btn btn-tare" onclick="sendCommand('tare')">Tare (Zero)</button>
+                <button class="control-btn btn-start" id="btnStart">Start</button>
+                <button class="control-btn btn-stop" id="btnStop">Stop</button>
+                <button class="control-btn btn-tare" id="btnTare">Tare (Zero)</button>
             </div>
 
             <div class="chart-container">
@@ -91,126 +51,6 @@
         <p>Fall 2025 Hackathon Project by Jericho & Peter</p>
     </div>
 
-    <script>
-        // --- CONFIGURATION ---
-        // UUIDs MUST match the Arduino Sketch exactly
-        const serviceUUID = "19b10000-e8f2-537e-4f6c-d104768a1214"; 
-        const notifyUUID =  "19b10001-e8f2-537e-4f6c-d104768a1214"; // Read Data
-        const commandUUID = "19b10002-e8f2-537e-4f6c-d104768a1214"; // Send Commands
-
-        let device, server, service, notifyChar, commandChar;
-        const ctx = document.getElementById('forceChart').getContext('2d');
-
-        // Setup Chart
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Force (kg)',
-                    data: [],
-                    borderColor: 'rgb(255, 107, 53)',
-                    backgroundColor: 'rgba(255, 107, 53, 0.05)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 4,
-                    pointBackgroundColor: 'rgb(255, 107, 53)',
-                    pointBorderColor: 'white',
-                    pointBorderWidth: 2,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                    x: { display: false } // Hide X axis labels for cleaner look
-                }
-            }
-        });
-
-        async function connectToBLE() {
-            try {
-                document.getElementById('status').innerText = "Scanning...";
-                document.getElementById('statusDot').style.animation = 'pulse 1s infinite';
-                
-                device = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: [serviceUUID]
-                });
-
-                document.getElementById('status').innerText = "Connecting...";
-                server = await device.gatt.connect();
-                service = await server.getPrimaryService(serviceUUID);
-
-                // 1. Get Notification Characteristic (Read)
-                notifyChar = await service.getCharacteristic(notifyUUID);
-                await notifyChar.startNotifications();
-                notifyChar.addEventListener('characteristicvaluechanged', handleData);
-
-                // 2. Get Command Characteristic (Write)
-                try {
-                    commandChar = await service.getCharacteristic(commandUUID);
-                    // Enable buttons
-                    document.querySelectorAll('.control-btn').forEach(btn => btn.classList.add('active'));
-                } catch (e) {
-                    console.warn("Command Characteristic not found. Make sure Arduino code is updated.");
-                }
-
-                // UI Updates
-                document.getElementById('status').innerText = "Connected";
-                document.getElementById('statusDot').classList.add('connected');
-                document.getElementById('connectBtn').disabled = true;
-                document.getElementById('connectBtn').innerText = "Connected";
-
-                device.addEventListener('gattserverdisconnected', onDisconnect);
-
-            } catch (error) {
-                console.error(error);
-                document.getElementById('status').innerText = "Error: " + error;
-                document.getElementById('statusDot').style.animation = 'pulse-off 2s infinite';
-            }
-        }
-
-        async function sendCommand(cmd) {
-            if (!commandChar) {
-                alert("Not connected or Arduino code is outdated!");
-                return;
-            }
-            try {
-                const encoder = new TextEncoder();
-                await commandChar.writeValue(encoder.encode(cmd));
-                console.log("Sent Command: " + cmd);
-            } catch (e) {
-                console.error("Failed to send command", e);
-            }
-        }
-
-        function handleData(event) {
-            const dataView = event.target.value;
-            const massKg = dataView.getFloat32(0, true); 
-            
-            document.getElementById('valueDisplay').innerText = massKg.toFixed(2) + " kg";
-
-            const now = new Date().toLocaleTimeString();
-            if (chart.data.labels.length > 50) {
-                chart.data.labels.shift();
-                chart.data.datasets[0].data.shift();
-            }
-            chart.data.labels.push(now);
-            chart.data.datasets[0].data.push(massKg);
-            chart.update();
-        }
-
-        function onDisconnect() {
-            document.getElementById('status').innerText = "Disconnected";
-            document.getElementById('statusDot').classList.remove('connected');
-            document.getElementById('connectBtn').disabled = false;
-            document.getElementById('connectBtn').innerText = "📡 Connect to Device";
-            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
