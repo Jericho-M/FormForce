@@ -62,7 +62,8 @@ async function connectToBLE() {
         statusDot.style.animation = 'pulse 1s infinite';
         
         device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
+            //acceptAllDevices: true,
+            filters: [{ name: 'LoadCellUno' }],
             optionalServices: [serviceUUID]
         });
 
