@@ -15,10 +15,21 @@ const statusDot = document.getElementById('statusDot');
 const valueDisplay = document.getElementById('valueDisplay');
 const maxDisplay = document.getElementById('maxDisplay');
 
+// Log what we found
+console.log("Elements loaded:", {
+    connectBtn: !!connectBtn,
+    btnTare: !!btnTare,
+    btnResetMax: !!btnResetMax,
+    statusText: !!statusText,
+    statusDot: !!statusDot,
+    valueDisplay: !!valueDisplay,
+    maxDisplay: !!maxDisplay
+});
+
 // --- EVENT LISTENERS ---
-connectBtn.addEventListener('click', connectToBLE);
-btnTare.addEventListener('click', () => sendCommand('tare'));
-btnResetMax.addEventListener('click', resetMax);
+if (connectBtn) connectBtn.addEventListener('click', connectToBLE);
+if (btnTare) btnTare.addEventListener('click', () => sendCommand('tare'));
+if (btnResetMax) btnResetMax.addEventListener('click', resetMax);
 
 // --- CHART SETUP ---
 const ctx = document.getElementById('forceChart').getContext('2d');
@@ -133,12 +144,12 @@ function handleData(event) {
     
     console.log("Data received - massKg:", massKg, "rounded:", Math.round(massKg));
     
-    valueDisplay.innerText = massKg.toFixed(2) + " kg";
+    if (valueDisplay) valueDisplay.innerText = massKg.toFixed(2) + " kg";
 
     // Track maximum force value
     if (massKg > maxForceValue) {
         maxForceValue = massKg;
-        maxDisplay.innerText = maxForceValue.toFixed(2) + " kg";
+        if (maxDisplay) maxDisplay.innerText = maxForceValue.toFixed(2) + " kg";
     }
 
     const now = new Date().toLocaleTimeString();
