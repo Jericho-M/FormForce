@@ -77,6 +77,9 @@ async function connectToBLE() {
             commandChar = await service.getCharacteristic(commandUUID);
             // Enable buttons
             document.querySelectorAll('.control-btn').forEach(btn => btn.classList.add('active'));
+            
+            // Automatically send "start" command to begin data streaming
+            await sendCommand('start');
         } catch (e) {
             console.warn("Command Characteristic not found. Arduino code might be outdated.");
         }
