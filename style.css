@@ -83,6 +83,19 @@ body {
     margin-bottom: 30px; 
 }
 
+.display-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.display-item {
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 12px;
+}
+
 #valueDisplay { 
     font-size: 4rem; 
     font-weight: 800; 
@@ -92,6 +105,17 @@ body {
     background-clip: text; 
     margin: 10px 0; 
     letter-spacing: -1px; 
+}
+
+#maxDisplay {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 10px 0;
+    letter-spacing: -1px;
 }
 
 .value-label { 
@@ -137,7 +161,7 @@ body {
 /* Control Buttons Grid */
 .control-grid { 
     display: grid; 
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr 1fr; 
     gap: 15px; 
     margin-bottom: 40px; 
 }
@@ -185,6 +209,11 @@ body {
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); 
 }
 
+.btn-reset-max {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
 .chart-container { 
     position: relative; 
     height: 350px; 
@@ -207,6 +236,8 @@ canvas {
 @media (max-width: 768px) { 
     .header h1 { font-size: 2.5rem; } 
     .content { padding: 30px 20px; } 
-    #valueDisplay { font-size: 2.5rem; } 
+    #valueDisplay { font-size: 2.5rem; }
+    #maxDisplay { font-size: 2rem; }
+    .display-grid { grid-template-columns: 1fr; }
     .control-grid { grid-template-columns: 1fr; } 
 }

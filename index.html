@@ -26,9 +26,17 @@
                 <p id="status">Ready to connect...</p>
             </div>
 
-            <div class="value-display-container">
-                <p class="value-label">Current Force</p>
-                <h2 id="valueDisplay">0.00 kg</h2>
+            <div class=\"value-display-container\">
+                <div class=\"display-grid\">
+                    <div class=\"display-item\">
+                        <p class=\"value-label\">Current Force</p>
+                        <h2 id=\"valueDisplay\">0.00 kg</h2>
+                    </div>
+                    <div class=\"display-item\">
+                        <p class=\"value-label\">Max Force</p>
+                        <h2 id=\"maxDisplay\">0.00 kg</h2>
+                    </div>
+                </div>
             </div>
 
             <div class="connect-container">
@@ -37,6 +45,7 @@
 
             <div class="control-grid">
                 <button class="control-btn btn-tare" id="btnTare">Tare (Zero)</button>
+                <button class="control-btn btn-reset-max" id="btnResetMax">Reset Max</button>
             </div>
 
             <div class="chart-container">

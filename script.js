@@ -4,17 +4,21 @@ const notifyUUID =  "19b10001-e8f2-537e-4f6c-d104768a1214"; // Read Data
 const commandUUID = "19b10002-e8f2-537e-4f6c-d104768a1214"; // Send Commands
 
 let device, server, service, notifyChar, commandChar;
+let maxForceValue = 0;
 
 // --- ELEMENT REFERENCES ---
 const connectBtn = document.getElementById('connectBtn');
 const btnTare = document.getElementById('btnTare');
+const btnResetMax = document.getElementById('btnResetMax');
 const statusText = document.getElementById('status');
 const statusDot = document.getElementById('statusDot');
 const valueDisplay = document.getElementById('valueDisplay');
+const maxDisplay = document.getElementById('maxDisplay');
 
 // --- EVENT LISTENERS ---
 connectBtn.addEventListener('click', connectToBLE);
 btnTare.addEventListener('click', () => sendCommand('tare'));
+btnResetMax.addEventListener('click', resetMax);
 
 // --- CHART SETUP ---
 const ctx = document.getElementById('forceChart').getContext('2d');
@@ -129,6 +133,12 @@ function handleData(event) {
     
     valueDisplay.innerText = massKg.toFixed(2) + " kg";
 
+    // Track maximum force value
+    if (massKg > maxForceValue) {
+        maxForceValue = massKg;
+        maxDisplay.innerText = maxForceValue.toFixed(2) + " kg";
+    }
+
     const now = new Date().toLocaleTimeString();
     if (chart.data.labels.length > 50) {
         chart.data.labels.shift();
@@ -148,4 +158,9 @@ function onDisconnect() {
     connectBtn.disabled = false;
     connectBtn.innerText = "Connect to Device";
     document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+}
+
+function resetMax() {
+    maxForceValue = 0;
+    maxDisplay.innerText = "0.00 kg";
 }
