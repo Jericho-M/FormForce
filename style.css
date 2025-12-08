@@ -109,7 +109,7 @@ body {
 }
 
 #maxDisplay {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 800;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     -webkit-background-clip: text;
@@ -206,13 +206,13 @@ body {
 }
 
 .btn-tare { 
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); 
+    background: #555; 
+    box-shadow: 0 4px 15px rgba(85, 85, 85, 0.3); 
 }
 
 .btn-reset-max {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    background: #555;
+    box-shadow: 0 4px 15px rgba(85, 85, 85, 0.3);
 }
 
 .chart-container { 
