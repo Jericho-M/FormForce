@@ -131,6 +131,8 @@ function handleData(event) {
     const dataView = event.target.value;
     const massKg = dataView.getFloat32(0, true); 
     
+    console.log("Data received - massKg:", massKg, "rounded:", Math.round(massKg));
+    
     valueDisplay.innerText = massKg.toFixed(2) + " kg";
 
     // Track maximum force value
@@ -146,9 +148,12 @@ function handleData(event) {
     }
 
     if (Math.round(massKg) > 0) {
+        console.log("Adding to chart - time:", now, "value:", massKg);
         chart.data.labels.push(now);
         chart.data.datasets[0].data.push(massKg);
         chart.update();
+    } else {
+        console.log("Not adding to chart - value below threshold");
     }
 }
 
