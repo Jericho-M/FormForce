@@ -61,7 +61,7 @@ body {
     width: 12px; 
     height: 12px; 
     border-radius: 50%; 
-    background-color: #e0e0e0; 
+    background-color: #000000; 
     animation: pulse-off 2s infinite; 
 }
 
@@ -93,7 +93,7 @@ body {
 
 .display-item {
     padding: 20px;
-    background: #fafafa;
+    background: #0f0f0f;
     border-radius: 12px;
 }
 
@@ -144,7 +144,7 @@ body {
     text-transform: uppercase; 
     letter-spacing: 0.5px; 
     background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); 
-    color: white; 
+    color: black; 
     box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4); 
 }
 
@@ -176,7 +176,7 @@ body {
     cursor: pointer; 
     transition: all 0.2s ease; 
     text-transform: uppercase; 
-    color: white; 
+    color: black; 
     opacity: 0.5; 
     pointer-events: none; 
     
