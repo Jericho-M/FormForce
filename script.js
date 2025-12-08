@@ -7,8 +7,6 @@ let device, server, service, notifyChar, commandChar;
 
 // --- ELEMENT REFERENCES ---
 const connectBtn = document.getElementById('connectBtn');
-const btnStart = document.getElementById('btnStart');
-const btnStop = document.getElementById('btnStop');
 const btnTare = document.getElementById('btnTare');
 const statusText = document.getElementById('status');
 const statusDot = document.getElementById('statusDot');
@@ -16,8 +14,6 @@ const valueDisplay = document.getElementById('valueDisplay');
 
 // --- EVENT LISTENERS ---
 connectBtn.addEventListener('click', connectToBLE);
-btnStart.addEventListener('click', () => sendCommand('start'));
-btnStop.addEventListener('click', () => sendCommand('stop'));
 btnTare.addEventListener('click', () => sendCommand('tare'));
 
 // --- CHART SETUP ---
@@ -27,7 +23,7 @@ const chart = new Chart(ctx, {
     data: {
         labels: [],
         datasets: [{
-            label: 'Force (kg)',
+            label: 'Load (kg)',
             data: [],
             borderColor: 'rgb(255, 107, 53)',
             backgroundColor: 'rgba(255, 107, 53, 0.05)',
@@ -147,6 +143,6 @@ function onDisconnect() {
     statusText.innerText = "Disconnected";
     statusDot.classList.remove('connected');
     connectBtn.disabled = false;
-    connectBtn.innerText = "📡 Connect to Device";
+    connectBtn.innerText = "Connect to Device";
     document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
 }
